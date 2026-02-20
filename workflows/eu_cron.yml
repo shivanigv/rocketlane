@@ -1,0 +1,29 @@
+# .github/workflows/rocketlane_eu_updater.yml
+
+name: Rocketlane EU Project Updater
+
+on:
+  schedule:
+    - cron: "30 3 * * *"  # 9:00 AM IST = 3:30 AM UTC
+  workflow_dispatch:        # allows manual trigger from GitHub UI
+
+jobs:
+  update-eu-projects:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run Rocketlane EU updater
+        env:
+          ROCKETLANE_API_KEY: ${{ secrets.ROCKETLANE_API_KEY }}
+        run: python status.py
