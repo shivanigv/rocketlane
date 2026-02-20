@@ -244,19 +244,22 @@ def run():
     # 1. Fetch EU projects
     log.info("Fetching EU projects …")
     projects = get_eu_projects()
+    # 2. Confirmation prompt — skipped automatically in cron (non-interactive)
     total = len(projects)
+    log.info("Total EU projects fetched: %d", total)
 
-    # 2. Confirmation prompt
-    print(f"\n{'='*52}")
-    print(f"  Total EU projects fetched : {total}")
-    print(f"  Please verify this count looks correct before proceeding.")
-    print(f"{'='*52}")
-    confirm = input("  Proceed with update? [y/N]: ").strip().lower()
-    print(f"{'='*52}\n")
-
-    if confirm != "y":
-        log.info("Aborted by user.")
-        return
+    if sys.stdin.isatty():
+        print(f"\n{'='*52}")
+        print(f"  Total EU projects fetched : {total}")
+        print(f"  Please verify this count looks correct.")
+        print(f"{'='*52}")
+        confirm = input("  Proceed with update? [y/N]: ").strip().lower()
+        print(f"{'='*52}\n")
+        if confirm != "y":
+            log.info("Aborted by user.")
+            return
+    else:
+        log.info("Non-interactive mode (cron) — proceeding automatically.")
 
     log.info("Proceeding with %d project(s) …", total)
 
